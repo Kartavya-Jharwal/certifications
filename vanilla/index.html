@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en" data-theme="motif" data-mode="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#121412" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Motif — Certificate Wall</title>
+    <meta name="description" content="An infinite public wall of certifications. Drag to roam, scroll or pinch to zoom, select a piece for details." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
+    <script type="importmap">
+      { "imports": { "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.7/index.js" } }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#dock">Skip to certificate wall controls</a>
+
+    <!-- Single polite live region: selection changes, theme changes, toasts. -->
+    <p id="sr-status" class="sr-only" role="status" aria-live="polite"></p>
+
+    <main class="canvas-app">
+      <div id="viewport" class="canvas-viewport" role="application"
+           aria-label="Infinite certificate wall. Drag to roam, scroll or pinch to zoom.">
+        <div id="board" class="infinite-board" aria-hidden="true"></div>
+        <div id="certificates" class="certificate-layer"></div>
+        <div class="signal-sweep" aria-hidden="true"></div>
+        <div class="signal-sweep signal-sweep-alt" aria-hidden="true"></div>
+        <div id="theme-wash" class="theme-wash" aria-hidden="true"></div>
+
+        <input id="file-input" type="file" accept="image/*" class="sr-only" tabindex="-1" />
+        <div id="toasts" class="toasts" aria-hidden="true"></div>
+        <div id="drop-hint" class="drop-hint" aria-hidden="true">
+          <i data-lucide="image-plus"></i><span>Drop an image to hang it</span>
+        </div>
+
+        <section id="dock" class="canvas-toolbar" aria-label="Certificate wall controls">
+          <div class="dock-cluster">
+            <button class="tool-button" type="button" data-action="zoom-out" data-tip="Zoom out — key −" aria-label="Zoom out"><i data-lucide="zoom-out"></i></button>
+            <button id="zoom-readout" class="zoom-readout" type="button" data-tip="Zoom presets — keys 1 to 4" aria-label="Cycle zoom presets">100%</button>
+            <button class="tool-button" type="button" data-action="zoom-in" data-tip="Zoom in — key +" aria-label="Zoom in"><i data-lucide="zoom-in"></i></button>
+          </div>
+
+          <span class="dock-sep" aria-hidden="true"></span>
+
+          <div class="dock-cluster">
+            <button class="tool-button" type="button" data-action="scatter" data-tip="Realign the wall — key S" aria-label="Realign the wall"><i data-lucide="sparkles"></i></button>
+            <button class="tool-button" type="button" data-action="add" data-tip="Hang an image — key U" aria-label="Hang an image"><i data-lucide="image-plus"></i></button>
+            <button class="tool-button" type="button" data-action="share" data-tip="Copy link to this view" aria-label="Copy link to this view"><i data-lucide="link"></i></button>
+            <button class="tool-button" type="button" data-action="center" data-tip="Recentre — key 0" aria-label="Recentre the wall"><i data-lucide="locate-fixed"></i></button>
+            <button id="fs-button" class="tool-button fs-btn" type="button" data-action="fullscreen" data-tip="Fullscreen" aria-label="Enter fullscreen">
+              <i data-lucide="maximize" class="fs-icon-max"></i>
+              <i data-lucide="minimize" class="fs-icon-min"></i>
+            </button>
+            <button class="tool-button kb-btn" type="button" data-action="shortcuts" data-tip="Shortcuts — key ?" aria-label="Keyboard shortcuts"><i data-lucide="keyboard"></i></button>
+            <span id="fps-dot" class="fps-dot" data-grade="ok" aria-hidden="true"></span>
+          </div>
+
+          <span class="dock-sep" aria-hidden="true"></span>
+
+          <div class="mode-switch" role="group" aria-label="Brightness">
+            <span class="mode-thumb" aria-hidden="true"></span>
+            <button class="mode-opt" type="button" data-mode-set="dark" data-tip="Dark — key M" aria-pressed="true" aria-label="Dark mode"><i data-lucide="moon"></i></button>
+            <button class="mode-opt" type="button" data-mode-set="light" data-tip="Light — key M" aria-pressed="false" aria-label="Light mode"><i data-lucide="sun"></i></button>
+          </div>
+
+          <span class="dock-sep" aria-hidden="true"></span>
+
+          <div class="theme-rail" role="group" aria-label="Colour theme">
+            <button class="theme-chip" type="button" data-theme-set="motif"       data-tip="Motif"       aria-pressed="true"  aria-label="Motif theme"></button>
+            <button class="theme-chip" type="button" data-theme-set="dracula"     data-tip="Dracula"     aria-pressed="false" aria-label="Dracula theme"></button>
+            <button class="theme-chip" type="button" data-theme-set="monokai"     data-tip="Monokai"     aria-pressed="false" aria-label="Monokai theme"></button>
+            <button class="theme-chip" type="button" data-theme-set="tokyo-night" data-tip="Tokyo Night" aria-pressed="false" aria-label="Tokyo Night theme"></button>
+            <button class="theme-chip" type="button" data-theme-set="catppuccin"  data-tip="Catppuccin"  aria-pressed="false" aria-label="Catppuccin theme"></button>
+            <button class="theme-chip" type="button" data-theme-set="solara"      data-tip="Solara"      aria-pressed="false" aria-label="Solara theme"></button>
+          </div>
+        </section>
+
+        <aside id="selection-panel" class="selection-panel" hidden aria-label="Selected artwork">
+          <div class="selection-topline">
+            <span>Selected</span>
+            <button type="button" data-action="deselect" aria-label="Close details"><i data-lucide="x"></i></button>
+          </div>
+          <div class="panel-nav">
+            <button class="nav-btn" type="button" data-action="prev" data-tip="Previous — arrow left" aria-label="Previous piece"><i data-lucide="chevron-left"></i></button>
+            <span id="selection-index" class="panel-index">— / —</span>
+            <button class="nav-btn" type="button" data-action="next" data-tip="Next — arrow right" aria-label="Next piece"><i data-lucide="chevron-right"></i></button>
+          </div>
+          <h1 id="selection-title">—</h1>
+          <p id="selection-format">— <i aria-hidden="true"></i> 2025</p>
+          <p id="selection-summary" class="selection-summary">—</p>
+          <div class="selection-color">
+            <span id="selection-swatch" aria-hidden="true"></span>
+            <span>Medium</span>
+            <b id="selection-tone">—</b>
+          </div>
+          <button type="button" class="focus-action" data-action="focus">
+            <span>Focus on wall</span><i data-lucide="arrow-right"></i>
+          </button>
+        </aside>
+
+        <div class="minimap">
+          <button id="minimap-board" class="minimap-board" type="button" aria-label="Jump to a position on the wall">
+            <span id="mm-dots" class="mm-dots" aria-hidden="true"></span>
+            <span id="minimap-window" class="minimap-window" aria-hidden="true"></span>
+          </button>
+          <span aria-hidden="true">Overview</span>
+        </div>
+
+        <div id="shortcuts" class="shortcuts" hidden>
+          <div class="shortcuts-card" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+            <div class="shortcuts-head">
+              <span><i data-lucide="keyboard"></i>Keyboard</span>
+              <button type="button" data-action="shortcuts" aria-label="Close shortcuts"><i data-lucide="x"></i></button>
+            </div>
+            <dl class="shortcuts-list">
+              <div><dt>Drag</dt><dd>Roam the wall</dd></div>
+              <div><dt>Scroll · Pinch</dt><dd>Zoom at cursor</dd></div>
+              <div><dt>Click</dt><dd>Select a piece</dd></div>
+              <div><dt>Double-click</dt><dd>Focus a piece</dd></div>
+              <div><dt>← →</dt><dd>Previous · next piece</dd></div>
+              <div><dt>F</dt><dd>Focus the selection</dd></div>
+              <div><dt>+ −</dt><dd>Zoom in · out</dd></div>
+              <div><dt>1 – 4</dt><dd>Overview · gallery · intimate · detail</dd></div>
+              <div><dt>0</dt><dd>Recentre the wall</dd></div>
+              <div><dt>S</dt><dd>Realign the wall</dd></div>
+              <div><dt>U</dt><dd>Hang an image</dd></div>
+              <div><dt>T · M</dt><dd>Cycle theme · brightness</dd></div>
+              <div><dt>Esc</dt><dd>Deselect · close</dd></div>
+              <div><dt>?</dt><dd>This panel</dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div id="splash" class="splash">
+          <div class="splash-inner">
+            <p class="splash-kicker">Motif</p>
+            <h1 class="splash-word">Certificate Wall</h1>
+            <p class="splash-summary">An endless wall of proof. Drag to roam, scroll or pinch to zoom.</p>
+            <button class="splash-enter" type="button" data-action="enter">
+              <span class="enter-dot" aria-hidden="true"></span>Enter the wall
+            </button>
+            <p class="splash-hint">drag to roam · scroll or pinch to zoom</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
