@@ -152,7 +152,24 @@ export function createWallRenderer(host) {
     }
     loading.add(piece.id);
     try {
-      await texturePool.acquire(piece.id, piece.image, PIXI);
+      let texture;
+      try {
+        texture = await PIXI.Assets.load({
+          alias: `cert-${piece.id}`,
+          src: piece.image,
+          data: { crossOrigin: "anonymous" },
+        });
+      } catch {
+        texture = await new Promise((resolve) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.onload = () => resolve(PIXI.Texture.from(img));
+          img.onerror = () => resolve(PIXI.Texture.WHITE);
+          img.src = piece.image;
+        });
+      }
+      texturePool.byId.set(piece.id, { texture, url: piece.image, lastUsed: performance.now() });
+      texturePool.lru.push(piece.id);
       applyTex(piece.id);
     } finally {
       loading.delete(piece.id);

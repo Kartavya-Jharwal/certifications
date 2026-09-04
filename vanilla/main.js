@@ -233,6 +233,7 @@ async function enterWall() {
   if (state.entered) return;
   state.entered = true;
   if (splashEl) {
+    splashEl.style.pointerEvents = "none";
     gsap.to(splashEl, {
       opacity: 0,
       duration: reduceMotion ? 0.01 : 0.45,
