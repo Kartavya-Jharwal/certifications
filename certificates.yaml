@@ -1,0 +1,126 @@
+# Certificate catalog — single edit surface (ICP proof wall)
+version: 1
+tile:
+  w: 5200
+  h: 3600
+
+certificates:
+  - id: systems-architecture
+    title: Systems Architecture Signal
+    issuer: Reference Guild
+    year: 2024
+    summary: Architecture under cost ceilings, not slideware.
+    credentialId: CERT-SYS-2024-01
+    verifyUrl: "#"
+    tags: [systems, architecture, cost-control]
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=900&q=80"
+
+  - id: ai-deployment
+    title: AI Deployment Latency
+    issuer: Validation Bureau
+    year: 2025
+    summary: Forward-deployed pipelines with unit-economic guardrails.
+    credentialId: CERT-AI-2025-02
+    verifyUrl: "#"
+    tags: [ai, deployment, latency]
+    image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=900&q=80"
+
+  - id: ops-digitization
+    title: Operations Digitization
+    issuer: Atlas Registry
+    year: 2024
+    summary: Paper registers to SKU baselines in days, not quarters.
+    credentialId: CERT-OPS-2024-03
+    verifyUrl: "#"
+    tags: [ops, digitization, execution]
+    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=900&q=80"
+
+  - id: data-integrations
+    title: Legacy Data Integrations
+    issuer: Signal Office
+    year: 2023
+    summary: Messy sources reconciled into decision-grade tables.
+    credentialId: CERT-DATA-2023-04
+    verifyUrl: "#"
+    tags: [data, integrations, duckdb]
+    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=900&q=80"
+
+  - id: voice-pipeline
+    title: Real-Time Voice Pipeline
+    issuer: Civic Index
+    year: 2025
+    summary: Streaming inference bounded by per-call cost envelopes.
+    credentialId: CERT-VOICE-2025-05
+    verifyUrl: "#"
+    tags: [ai, voice, unit-economics]
+    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=80"
+
+  - id: asset-takeover
+    title: Physical Asset Takeover
+    issuer: Third-Party Ledger
+    year: 2024
+    summary: Eight-day operational capture with clean handoff packs.
+    credentialId: CERT-ASSET-2024-06
+    verifyUrl: "#"
+    tags: [ops, hospitality, turnaround]
+    image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80"
+
+  - id: cash-reconciliation
+    title: Portfolio Cash Reconciliation
+    issuer: Validation Bureau
+    year: 2023
+    summary: Multi-site cash and shift books automated to zero manual error.
+    credentialId: CERT-CASH-2023-07
+    verifyUrl: "#"
+    tags: [ops, finance, automation]
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80"
+
+  - id: quant-stack
+    title: Reproducible Quant Stack
+    issuer: Reference Guild
+    year: 2025
+    summary: DuckDB portfolio tooling built for auditability first.
+    credentialId: CERT-QUANT-2025-08
+    verifyUrl: "#"
+    tags: [data, quant, reproducibility]
+    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=900&q=80"
+
+  - id: margin-diagnostics
+    title: Unit-Economic Diagnostics
+    issuer: Atlas Registry
+    year: 2024
+    summary: Margin leaks mapped to concrete system changes.
+    credentialId: CERT-MARGIN-2024-09
+    verifyUrl: "#"
+    tags: [unit-economics, systems, fde]
+    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=900&q=80"
+
+  - id: cloud-trust
+    title: High-Trust Cloud Attestation
+    issuer: Signal Office
+    year: 2023
+    summary: Verified cloud posture for buyer due diligence.
+    credentialId: CERT-CLOUD-2023-10
+    verifyUrl: "#"
+    tags: [cloud, security, architecture]
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=900&q=80"
+
+  - id: implementation-lead
+    title: Implementation Lead Proof
+    issuer: Civic Index
+    year: 2025
+    summary: Parachute into broken deployments; restore delivery cadence.
+    credentialId: CERT-IMPL-2025-11
+    verifyUrl: "#"
+    tags: [fde, delivery, execution]
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=900&q=80"
+
+  - id: public-attestation
+    title: Public Attestation Record
+    issuer: Third-Party Ledger
+    year: 2024
+    summary: Inspectable credentials — proof over pedigree.
+    credentialId: CERT-PUB-2024-12
+    verifyUrl: "#"
+    tags: [proof, credentials, verification]
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=900&q=80"

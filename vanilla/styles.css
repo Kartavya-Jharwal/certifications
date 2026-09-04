@@ -8,11 +8,33 @@
      UI borders     ≥ 3:1   (AA non-text)
    ═══════════════════════════════════════════════════════════════════════════ */
 
+@font-face {
+  font-family: "Satoshi";
+  src: url("./fonts/Satoshi-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("./fonts/Satoshi-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Satoshi";
+  src: url("./fonts/Satoshi-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   /* ── Type ─────────────────────────────────────────────────────────────── */
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Space Grotesk", Inter, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* 16px floor everywhere it matters — no unreadable 9px chrome. */
   --text-2xs: 0.6875rem;  /* 11px — uppercase mono labels only, wide tracking */
@@ -67,30 +89,44 @@
   --bg: #121412; --bg-deep: #090a09;
   --surface: rgba(24,27,25,0.92); --surface-solid: #1b1e1c; --surface-2: #262a27;
   --border: rgba(238,236,228,0.20); --border-strong: rgba(238,236,228,0.38);
-  --text: #f4f2ea;        /* 16.1:1 on --bg  AAA */
-  --text-2: #cdd0c8;      /* 10.8:1          AAA */
-  --text-muted: #a4a89f;  /*  6.9:1          AA  */
-  --text-dim: #8a8e85;    /*  5.0:1          AA  */
-  --accent: #ff9166;      /*  9.3:1 — icons, focus, emphasis */
+  --text: #f4f2ea;
+  --text-2: #cdd0c8;
+  --text-muted: #a4a89f;
+  --text-dim: #8a8e85;
+  --accent: #ff9166;
   --accent-2: #7cc0d6;
-  --accent-ink: #16110c;  /* on --accent fill: 8.6:1 */
+  --accent-ink: #16110c;
   --board-a: #2b2825; --board-b: #211f1d;
   --board-line: rgba(255,242,228,0.055);
+  --mat-a: #3a342c; --mat-b: #2b2825; --mat-ink: #f4f2ea;
+  --fog: rgba(9,10,9,0.35); --dim-overlay: rgba(0,0,0,0.48);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent);
+  --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: dark;
 }
 [data-theme="motif"][data-mode="light"] {
   --bg: #f2efe8; --bg-deep: #e4e0d6;
   --surface: rgba(253,251,246,0.94); --surface-solid: #fbf9f4; --surface-2: #eeeae1;
   --border: rgba(30,28,24,0.22); --border-strong: rgba(30,28,24,0.42);
-  --text: #17150f;        /* 15.9:1 AAA */
-  --text-2: #3b382f;      /*  9.6:1 AAA */
-  --text-muted: #5c584d;  /*  6.1:1 AA  */
-  --text-dim: #6f6b5f;    /*  4.8:1 AA  */
-  --accent: #9a3a12;      /*  6.4:1 AA  */
+  --text: #17150f;
+  --text-2: #3b382f;
+  --text-muted: #5c584d;
+  --text-dim: #6f6b5f;
+  --accent: #9a3a12;
   --accent-2: #1f5f70;
   --accent-ink: #fffaf4;
   --board-a: #efeade; --board-b: #e3ddce;
   --board-line: rgba(30,28,24,0.06);
+  --mat-a: #f7f1e4; --mat-b: #ebe3d2; --mat-ink: #17150f;
+  --fog: rgba(228,224,214,0.4); --dim-overlay: rgba(23,21,15,0.28);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent);
+  --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: light;
 }
 
@@ -103,6 +139,12 @@
   --accent: #ff7b7b; --accent-2: #c9a6fa; --accent-ink: #1a1620;
   --board-a: #2c2e3c; --board-b: #232532;
   --board-line: rgba(248,248,242,0.055);
+  --mat-a: #3a3d52; --mat-b: #2c2e3c; --mat-ink: #f8f8f2;
+  --fog: rgba(20,21,28,0.4); --dim-overlay: rgba(0,0,0,0.5);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: dark;
 }
 [data-theme="dracula"][data-mode="light"] {
@@ -113,6 +155,12 @@
   --accent: #a3243c; --accent-2: #5b3a9e; --accent-ink: #fff7f9;
   --board-a: #eee9f7; --board-b: #e2dcee;
   --board-line: rgba(50,40,72,0.06);
+  --mat-a: #f5f1fc; --mat-b: #eee9f7; --mat-ink: #221d33;
+  --fog: rgba(227,221,239,0.45); --dim-overlay: rgba(34,29,51,0.28);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: light;
 }
 
@@ -125,6 +173,12 @@
   --accent: #ff6191; --accent-2: #b6e457; --accent-ink: #1a1015;
   --board-a: #2e2f27; --board-b: #24251f;
   --board-line: rgba(248,248,242,0.055);
+  --mat-a: #3a3b31; --mat-b: #2e2f27; --mat-ink: #f8f8f2;
+  --fog: rgba(19,20,16,0.4); --dim-overlay: rgba(0,0,0,0.5);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: dark;
 }
 [data-theme="monokai"][data-mode="light"] {
@@ -135,6 +189,12 @@
   --accent: #a4143f; --accent-2: #3f6b0c; --accent-ink: #fff8fa;
   --board-a: #f2f1e5; --board-b: #e7e6d8;
   --board-line: rgba(34,35,27,0.06);
+  --mat-a: #faf9f0; --mat-b: #f2f1e5; --mat-ink: #22231b;
+  --fog: rgba(233,232,218,0.45); --dim-overlay: rgba(34,35,27,0.28);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: light;
 }
 
@@ -147,6 +207,12 @@
   --accent: #8fb3ff; --accent-2: #c9a9fb; --accent-ink: #0e1018;
   --board-a: #232539; --board-b: #1b1d2c;
   --board-line: rgba(192,202,245,0.06);
+  --mat-a: #2e3148; --mat-b: #232539; --mat-ink: #d3daf5;
+  --fog: rgba(13,14,20,0.4); --dim-overlay: rgba(0,0,0,0.5);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: dark;
 }
 [data-theme="tokyo-night"][data-mode="light"] {
@@ -157,6 +223,12 @@
   --accent: #2a4b96; --accent-2: #5b3ba0; --accent-ink: #f6f7fc;
   --board-a: #e9eaf2; --board-b: #dcdeea;
   --board-line: rgba(30,34,60,0.06);
+  --mat-a: #f0f1f7; --mat-b: #e9eaf2; --mat-ink: #191b2a;
+  --fog: rgba(212,214,226,0.45); --dim-overlay: rgba(25,27,42,0.28);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: light;
 }
 
@@ -169,6 +241,12 @@
   --accent: #fbb890; --accent-2: #cba6f7; --accent-ink: #1b1420;
   --board-a: #272639; --board-b: #1f1e2e;
   --board-line: rgba(205,214,244,0.06);
+  --mat-a: #322f48; --mat-b: #272639; --mat-ink: #cdd6f4;
+  --fog: rgba(16,15,25,0.4); --dim-overlay: rgba(0,0,0,0.5);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: dark;
 }
 [data-theme="catppuccin"][data-mode="light"] {
@@ -179,6 +257,12 @@
   --accent: #9c4213; --accent-2: #6a30b8; --accent-ink: #fff9f5;
   --board-a: #eaecf2; --board-b: #dfe2ea;
   --board-line: rgba(60,63,85,0.06);
+  --mat-a: #f4f5f9; --mat-b: #eaecf2; --mat-ink: #3c3f55;
+  --fog: rgba(220,224,232,0.45); --dim-overlay: rgba(60,63,85,0.28);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: light;
 }
 
@@ -191,6 +275,12 @@
   --accent: #f0722f; --accent-2: #d9a400; --accent-ink: #1a0d05;
   --board-a: #093843; --board-b: #06303a;
   --board-line: rgba(238,232,213,0.07);
+  --mat-a: #0f4a56; --mat-b: #093843; --mat-ink: #eee8d5;
+  --fog: rgba(0,24,31,0.45); --dim-overlay: rgba(0,0,0,0.5);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: dark;
 }
 [data-theme="solara"][data-mode="light"] {
@@ -201,6 +291,12 @@
   --accent: #97400f; --accent-2: #7a5c00; --accent-ink: #fffaf0;
   --board-a: #f8f1dd; --board-b: #ede4cd;
   --board-line: rgba(45,59,61,0.07);
+  --mat-a: #fff8e8; --mat-b: #f8f1dd; --mat-ink: #2d3b3d;
+  --fog: rgba(239,231,207,0.45); --dim-overlay: rgba(45,59,61,0.28);
+  --dock-bg: var(--surface); --dock-border: var(--border);
+  --panel-bg: var(--surface); --panel-border: var(--border-strong);
+  --focus-ring: var(--accent); --minimap-ink: var(--text-muted); --minimap-window: var(--accent);
+  --canvas-clear: var(--bg);
   color-scheme: light;
 }
 
@@ -272,25 +368,20 @@ button { font: inherit; color: inherit; }
   transition: background-color var(--dur-slow) var(--ease-out);
 }
 
-/* Cards live here. Each node is absolutely placed at the origin and moved
-   entirely by transform — the render loop writes one transform per node. */
-.certificate-layer {
+/* Pixi host — GPU wall. DOM chrome stacks above. */
+.wall-host {
   position: absolute; inset: 0; z-index: var(--z-cards);
-  transform-origin: 0 0; will-change: transform;
   pointer-events: none;
 }
-
-.signal-sweep {
-  position: absolute; inset: -10% -15%; z-index: var(--z-fx);
-  pointer-events: none; mix-blend-mode: screen;
-  background: linear-gradient(115deg, transparent 42%, color-mix(in oklab, var(--accent) 9%, transparent) 50%, transparent 58%);
-  animation: sweep 18s linear infinite;
+.wall-host canvas {
+  display: block; width: 100%; height: 100%;
+  pointer-events: auto;
+  touch-action: none;
 }
-.signal-sweep-alt { animation-duration: 27s; animation-direction: reverse; opacity: 0.4; }
-@keyframes sweep { from { transform: translateX(-46%); } to { transform: translateX(46%); } }
 
 .theme-wash { position: absolute; inset: 0; z-index: var(--z-fx); pointer-events: none; opacity: 0; }
-html[data-paused] .signal-sweep { animation-play-state: paused; }
+
+/* Legacy DOM certificate rules removed — wall is Pixi-only. */
 
 /* ═══════════════════════════════════════════════════════════════════════════
    PIECE
@@ -615,6 +706,32 @@ html.is-fullscreen .fs-btn .fs-icon-min { display: block; }
   font-family: var(--font-sans) !important;
   font-size: var(--text-md) !important; line-height: 1.55;
 }
+.selection-credential {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  margin: var(--space-3) 0 var(--space-2);
+}
+.selection-credential .label { color: var(--text-dim); margin-right: var(--space-2); }
+.selection-tags {
+  font-size: var(--text-xs);
+  color: var(--accent-2);
+  margin: 0 0 var(--space-3);
+}
+.verify-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent-ink);
+  background: var(--accent);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-3);
+}
+.verify-link[hidden] { display: none !important; }
 .selection-color {
   display: flex; align-items: center; gap: var(--space-2);
   margin: var(--space-4) 0; padding-top: var(--space-3);

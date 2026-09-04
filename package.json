@@ -1,9 +1,9 @@
 {
   "name": "certifications",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
-  "description": "Public certificate wall — Motif infinite canvas, deployed to GitHub Pages",
+  "description": "ICP-aligned certificate wall — Pixi GPU canvas on GitHub Pages",
   "homepage": "https://kartavya.tech/certifications/",
   "bugs": {
     "url": "https://github.com/Kartavya-Jharwal/certifications/issues"
@@ -18,15 +18,20 @@
     "node": ">=22"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "node scripts/build-vanilla.js",
-    "preview": "vite preview",
-    "preview:site": "npx --yes serve site"
+    "build": "node scripts/build-all.js",
+    "build:data": "node scripts/build-data.js",
+    "build:site": "node scripts/build-vanilla.js",
+    "render:pdfs": "node scripts/render-pdfs.js",
+    "watch:pdfs": "node scripts/watch-pdfs.js",
+    "serve": "node scripts/serve.js",
+    "dev": "node scripts/build-all.js && node scripts/serve.js",
+    "stress:data": "node scripts/stress-gen-yaml.js"
   },
   "dependencies": {
-    "gsap": "^3.12.7"
-  },
-  "devDependencies": {
-    "vite": "^7.3.2"
+    "@napi-rs/canvas": "^0.1.65",
+    "gsap": "^3.12.7",
+    "pdfjs-dist": "^4.10.38",
+    "pixi.js": "8.20.1",
+    "yaml": "^2.7.0"
   }
 }

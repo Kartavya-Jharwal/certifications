@@ -1,65 +1,61 @@
-# Certifications — Public Certificate Wall
+# Certificate Wall
 
-Infinite Motif-style wall of certificates, published on GitHub Pages:
+Inspectable credentials on an infinite Motif wall — proof for discretionary technical buyers, not a trophy gallery.
 
-**https://kartavya.tech/certifications/**
-
-(also available at https://kartavya-jharwal.github.io/certifications/)
-
-Local preview uses Unsplash stand-ins. Real certificate assets can be patched in later under `public/assets/`.
+**Live:** https://kartavya.tech/certifications/
 
 ## Quick start
 
 ```bash
 npm install
-npm run dev          # Vite local preview → http://localhost:5173
-npm run build        # Assemble site/ (same artifact CI deploys)
-npm run preview:site # Optional: preview the Pages bundle
+npm run build          # data → site/
+npm run serve          # http://localhost:4173/
+npm run dev            # build + serve
 ```
 
-Requires **Node 22+** (see `.nvmrc`).
+### Content
 
-## Project layout
+Edit **only** [`certificates.yaml`](./certificates.yaml), then rebuild.
 
-| Path | Role |
-|------|------|
-| `vanilla/` | Source of truth — HTML, CSS, JS shipped to Pages |
-| `index.html` | Vite entry; loads `vanilla/` for local preview |
-| `scripts/build-vanilla.js` | Builds a clean `site/` artifact |
-| `public/assets/` | Drop real certificate images here (copied to `site/assets/`) |
-| `.github/workflows/deploy.yml` | Builds `site/` and deploys via `actions/deploy-pages` |
+```bash
+npm run build:data
+```
 
-`site/` and `dist/` are build outputs and are gitignored. CI always rebuilds from `vanilla/`.
+### PDFs → PNG
 
-## GitHub Pages
+```bash
+# Drop source-pdfs/<id>.pdf matching catalog ids
+npm run render:pdfs
+npm run watch:pdfs     # local bulk watcher
+```
 
-Deploy is automatic on every push to `main` (or via **Actions → Deploy certificate wall to GitHub Pages → Run workflow**).
+CI runs the same render step on every push to `main`.
 
-1. Repo **Settings → Pages → Build and deployment → Source** must be **GitHub Actions** (not a branch folder).
-2. The workflow uploads the `site/` artifact and publishes it.
-3. Live URL: https://kartavya.tech/certifications/ (GitHub Pages + custom domain)
+## Scripts
 
-Asset paths are relative (`./…`), so the site works under the `/certifications/` project path.
+| Script | Purpose |
+|--------|---------|
+| `build` | Optional PDFs (`BUILD_PDFS=1`) → data → site |
+| `build:data` | YAML → `generated/wall.json` + JSON-LD |
+| `build:site` | Assemble `site/` for Pages |
+| `render:pdfs` / `watch:pdfs` | PDF page-1 → `public/assets/<id>.png` |
+| `serve` | Static server for `site/` |
+| `stress:data` | Generate large YAML for scale tests |
 
-## Replacing preview images
+## Stack
 
-`vanilla/main.js` has an `IMAGES` array of Unsplash URLs for layout previews only.
+- Vanilla ES modules + PixiJS 8 (WebGPU/WebGL)
+- Spatial hash + modulo tiling, Δt momentum, critically damped focus springs
+- GitHub Pages via Actions
 
-When you add real certificates:
+## Docs
 
-1. Put files under `public/assets/` (e.g. `cert-01.png`).
-2. Point `IMAGES` (or per-piece `seed.image`) at `./assets/cert-01.png`.
-3. Push to `main` — Actions rebuilds and redeploys.
+- [Architecture](./docs/architecture.md)
+- [Data & pipeline](./docs/data-and-pipeline.md)
+- [ICP surface map](./docs/icp-surface-map.md) (public-safe)
+- [Backlog](./docs/backlog.md)
+- [Attribution](./docs/attribution.md)
 
 ## License
 
-See [`LICENSE`](./LICENSE):
-
-- **Code** — free to use, modify, and redistribute **with attribution**.
-- **Personal certifications** — **all rights reserved**. Do not copy, forge, or use them to imitate or misrepresent the owner.
-
-Placeholder Unsplash images remain under Unsplash’s license and are not personal certification content.
-
-## Controls
-
-Drag to pan · scroll/pinch to zoom · click to select · `F` focus · `0` recenter · `S` realign · `U` hang an image · `T`/`M` theme · `?` shortcuts
+Code: free with attribution. Personal certifications: all rights reserved — see [`LICENSE`](./LICENSE).

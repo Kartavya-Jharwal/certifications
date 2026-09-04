@@ -1,15 +1,21 @@
-# Build artifacts
+# Build outputs
 site/
 dist/
 generated/
 node_modules/
+
+# Local font kit (ship woff2 under public/fonts only)
+Satoshi_Complete/
+
+# Optional large sources
+source-pdfs/*.pdf
+!source-pdfs/README.md
+certificates.stress.yaml
 
 # OS / editor
 .DS_Store
 Thumbs.db
 *.log
 .vite/
-
-# Env
 .env
 .env.*
