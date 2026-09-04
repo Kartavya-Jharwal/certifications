@@ -1,3 +1,7 @@
-# Drop PDFs here named `<id>.pdf` matching certificates.yaml `id`.
-# `npm run render:pdfs` → public/assets/<id>.png
-# `npm run watch:pdfs` for bulk/dev. One-off: node scripts/render-pdfs.js path/to/id.pdf
+# Optional PDF sources (not used in the default Day-2 pipeline)
+
+Default content path: set `image:` in `certificates.yaml`, or drop
+`public/assets/<id>.png|jpg|webp` and rebuild.
+
+PDF → PNG is optional later (`npm run render:pdfs`). Name files `<id>.pdf`
+to match catalog ids when you enable it.

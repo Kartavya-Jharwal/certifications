@@ -32,9 +32,12 @@ let certificates = autofillLayouts(doc.certificates, tile);
 
 certificates = await Promise.all(
   certificates.map(async (c) => {
-    const local = resolve(root, "public/assets", `${c.id}.png`);
-    if (await exists(local)) {
-      return { ...c, image: `./assets/${c.id}.png` };
+    const assetsDir = resolve(root, "public/assets");
+    for (const ext of ["png", "jpg", "jpeg", "webp"]) {
+      const local = resolve(assetsDir, `${c.id}.${ext}`);
+      if (await exists(local)) {
+        return { ...c, image: `./assets/${c.id}.${ext}` };
+      }
     }
     return c;
   }),

@@ -17,19 +17,20 @@ npm run dev            # build + serve
 
 Edit **only** [`certificates.yaml`](./certificates.yaml), then rebuild.
 
+Images: YAML `image:` URLs, or drop `public/assets/<id>.png` (preferred when present).
+
 ```bash
 npm run build:data
 ```
 
-### PDFs → PNG
+PDF rendering is optional and **not** in the default CI path — see [data-and-pipeline](./docs/data-and-pipeline.md).
+
+### Optional PDFs (later)
 
 ```bash
-# Drop source-pdfs/<id>.pdf matching catalog ids
 npm run render:pdfs
-npm run watch:pdfs     # local bulk watcher
+npm run watch:pdfs
 ```
-
-CI runs the same render step on every push to `main`.
 
 ## Scripts
 
@@ -38,7 +39,7 @@ CI runs the same render step on every push to `main`.
 | `build` | Optional PDFs (`BUILD_PDFS=1`) → data → site |
 | `build:data` | YAML → `generated/wall.json` + JSON-LD |
 | `build:site` | Assemble `site/` for Pages |
-| `render:pdfs` / `watch:pdfs` | PDF page-1 → `public/assets/<id>.png` |
+| `render:pdfs` / `watch:pdfs` | Optional PDF page-1 → `public/assets/<id>.png` (not in default CI) |
 | `serve` | Static server for `site/` |
 | `stress:data` | Generate large YAML for scale tests |
 

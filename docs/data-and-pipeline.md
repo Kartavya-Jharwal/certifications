@@ -1,4 +1,4 @@
-# Data & pipeline
+# Data & pipeline (no-PDF default)
 
 ## Edit surface
 
@@ -16,20 +16,34 @@ Optional: `image`, `mat`, `accent`, `layout.{x,y,width,height,angle,depth}`
 
 Missing layout is autofilled with a seeded PRNG from `id` (stable across builds).
 
-## PDF → PNG
+## Images (current path — no PDFs)
+
+1. Set `image:` in YAML to a URL (e.g. Unsplash preview), **or**
+2. Drop a file at `public/assets/<id>.png` (or `.jpg` / `.webp`)
+
+`build-data` prefers a local file under `public/assets/<id>.*` over the YAML URL when present.
 
 ```bash
-npm run render:pdfs          # all source-pdfs/*.pdf
-node scripts/render-pdfs.js path/to/id.pdf   # one-off
-npm run watch:pdfs           # local watcher
+npm run build:data
+npm run build:site
+# or
+npm run build
 ```
-
-- Input: `source-pdfs/<id>.pdf` (id must match catalog)
-- Output: `public/assets/<id>.png` at 220 DPI, max edge 1600px
-- Page 1 only (multi-page = BACKLOG-PDF-02)
-
-If a PNG exists for an id, `build-data` prefers `./assets/<id>.png` over YAML `image` URLs.
 
 ## CI
 
-GitHub Actions: `npm ci` → `render:pdfs` → `build:data` → `build:site` → upload `site/`.
+GitHub Actions: `npm install` → `build:data` → `build:site` → upload `site/`.  
+PDF rendering is **not** part of the default deploy.
+
+## PDF → PNG (optional / later)
+
+Scripts remain for when you opt in:
+
+```bash
+npm install   # optionalDeps may pull pdfjs + canvas
+npm run render:pdfs
+npm run watch:pdfs
+BUILD_PDFS=1 npm run build
+```
+
+If optional deps are missing, render scripts exit with a clear message. See BACKLOG-PDF in [`backlog.md`](./backlog.md).

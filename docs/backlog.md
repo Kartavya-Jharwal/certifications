@@ -22,6 +22,7 @@
 | BACKLOG-SEARCH-01 | Filter/search by tag/issuer |
 | BACKLOG-OCR-01 | Auto-extract title from PDF |
 | BACKLOG-PDF-02 | Multi-page PDF → multi-image |
+| BACKLOG-PDF-03 | Re-enable PDF→PNG in default CI when cert scans are ready |
 | BACKLOG-I18N-01 | Localized UI |
 | BACKLOG-PWA-01 | Offline / installable |
 | BACKLOG-ANALYTICS-01 | Privacy-light analytics |

@@ -28,10 +28,12 @@
     "stress:data": "node scripts/stress-gen-yaml.js"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.65",
     "gsap": "^3.12.7",
-    "pdfjs-dist": "^4.10.38",
     "pixi.js": "8.20.1",
     "yaml": "^2.7.0"
+  },
+  "optionalDependencies": {
+    "@napi-rs/canvas": "^0.1.65",
+    "pdfjs-dist": "^4.10.38"
   }
 }
