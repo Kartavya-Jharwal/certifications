@@ -2,7 +2,9 @@
 
 Infinite Motif-style wall of certificates, published on GitHub Pages:
 
-**https://kartavya-jharwal.github.io/certifications/**
+**https://kartavya.tech/certifications/**
+
+(also available at https://kartavya-jharwal.github.io/certifications/)
 
 Local preview uses Unsplash stand-ins. Real certificate assets can be patched in later under `public/assets/`.
 
@@ -35,7 +37,7 @@ Deploy is automatic on every push to `main` (or via **Actions → Deploy certifi
 
 1. Repo **Settings → Pages → Build and deployment → Source** must be **GitHub Actions** (not a branch folder).
 2. The workflow uploads the `site/` artifact and publishes it.
-3. Live URL: https://kartavya-jharwal.github.io/certifications/
+3. Live URL: https://kartavya.tech/certifications/ (GitHub Pages + custom domain)
 
 Asset paths are relative (`./…`), so the site works under the `/certifications/` project path.
 
