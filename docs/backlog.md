@@ -3,11 +3,11 @@
 ## Kill-list (remove / never reintroduce)
 
 - Vite (`vite.config.js`, vite scripts, React-era dual entry)
-- Hang-an-image UI (`#file-input`, drop-hint, add button, `U`, `hangFile`, drag-drop)
+- Any add / upload / rearrange affordance on the page (hang-an-image, drop-hint, `U`, scatter/realign) — records enter via the data layer only
 - `.signal-sweep` / light-bar blob layers
 - Ambient idle drift without pointer
 - Per-frame `velocity *= 0.95` friction
-- GSAP for camera focus (splash only)
+- Tween libraries (GSAP etc.) — camera uses springs, chrome uses CSS transitions
 - Watching/committing `Satoshi_Complete/OTF` into the app path
 - Confidential ICP salary/visa/kill-gate copy on Pages
 

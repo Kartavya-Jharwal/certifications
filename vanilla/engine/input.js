@@ -1,4 +1,4 @@
-import { cancelSpring, fling, panBy, zoomAt, screenToWorld } from "./camera.js";
+import { fling, panBy, zoomAt, screenToWorld } from "./camera.js";
 
 function wheelPixels(e) {
   let dx = e.deltaX;
@@ -28,9 +28,14 @@ function createWheelNormalizer() {
   };
 }
 
+const DRAG_THRESHOLD_PX = 6;
+// Only the wall surface takes gestures; chrome keeps native button/scroll behaviour.
+const WALL_SURFACE = "#wall-host, #board";
+
 export function attachInput(el, cam, hooks = {}) {
   const {
     onSelect,
+    onPanStart,
     onRequestFrame,
     reduceMotion = false,
     getViewport = () => ({ w: el.clientWidth, h: el.clientHeight }),
@@ -40,9 +45,13 @@ export function attachInput(el, cam, hooks = {}) {
   const normalizeWheel = createWheelNormalizer();
   let lastPinchDist = 0;
   const velSamples = [];
-  let driftBoost = 0; // 0..1 ease
   let lastPointerWorld = null;
   let pointerActive = false;
+  let downAt = null;
+  let travelled = 0;
+  let panning = false;
+
+  const onWall = (target) => !!target?.closest?.(WALL_SURFACE);
 
   const drift = {
     vx: 0,
@@ -77,6 +86,7 @@ export function attachInput(el, cam, hooks = {}) {
   el.addEventListener(
     "wheel",
     (e) => {
+      if (!onWall(e.target)) return;
       e.preventDefault();
       const { w, h } = vp();
       const rect = el.getBoundingClientRect();
@@ -96,9 +106,14 @@ export function attachInput(el, cam, hooks = {}) {
 
   el.addEventListener("pointerdown", (e) => {
     if (e.button !== 0 && e.pointerType === "mouse") return;
+    if (!onWall(e.target)) return;
     el.setPointerCapture(e.pointerId);
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, t: performance.now() });
-    cancelSpring(cam);
+    if (pointers.size === 1) {
+      downAt = { x: e.clientX, y: e.clientY };
+      travelled = 0;
+      panning = false;
+    }
     velSamples.length = 0;
     pointerActive = true;
     if (pointers.size === 2) {
@@ -143,13 +158,20 @@ export function attachInput(el, cam, hooks = {}) {
         zoomAt(cam, dist / lastPinchDist, midX, midY, w, h);
       }
       lastPinchDist = dist;
+      beginPan();
     } else if (pointers.size === 1) {
       const now = performance.now();
+      if (!panning) {
+        travelled = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+        if (travelled < DRAG_THRESHOLD_PX) {
+          request();
+          return;
+        }
+        beginPan();
+      }
       const dt = Math.max(0.001, (now - prev.t) / 1000);
-      const dxScreen = e.clientX - prev.x;
-      const dyScreen = e.clientY - prev.y;
-      const dxW = -dxScreen / cam.zoom;
-      const dyW = -dyScreen / cam.zoom;
+      const dxW = -(e.clientX - prev.x) / cam.zoom;
+      const dyW = -(e.clientY - prev.y) / cam.zoom;
       panBy(cam, dxW, dyW);
       sampleVel(dxW, dyW, dt);
       pointers.set(e.pointerId, { x: e.clientX, y: e.clientY, t: now });
@@ -157,13 +179,23 @@ export function attachInput(el, cam, hooks = {}) {
     request();
   });
 
+  function beginPan() {
+    if (panning) return;
+    panning = true;
+    el.classList.add("is-panning");
+    onPanStart?.();
+  }
+
   function endPointer(e) {
     if (!pointers.has(e.pointerId)) return;
     pointers.delete(e.pointerId);
     if (pointers.size < 2) lastPinchDist = 0;
     if (pointers.size === 0) {
-      const v = meanVel();
-      if (Math.hypot(v.vx, v.vy) > 80) fling(cam, v.vx, v.vy);
+      if (panning) {
+        const v = meanVel();
+        if (Math.hypot(v.vx, v.vy) > 80) fling(cam, v.vx, v.vy);
+      }
+      el.classList.remove("is-panning");
       pointerActive = false;
     }
     request();
@@ -173,7 +205,7 @@ export function attachInput(el, cam, hooks = {}) {
   el.addEventListener("pointercancel", endPointer);
 
   el.addEventListener("click", (e) => {
-    if (Math.hypot(...velSamples.slice(-1).map(() => 0)) ) {/* noop */}
+    if (!onWall(e.target) || panning) return;
     const rect = el.getBoundingClientRect();
     onSelect?.(e.clientX - rect.left, e.clientY - rect.top);
   });

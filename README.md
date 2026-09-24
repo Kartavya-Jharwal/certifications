@@ -51,7 +51,8 @@ npm run watch:pdfs
 
 ## Docs
 
-- [Architecture](./docs/architecture.md)
+- [System design](./docs/system-design.md) (first principles / why)
+- [Architecture](./docs/architecture.md) (constants / how)
 - [Data & pipeline](./docs/data-and-pipeline.md)
 - [ICP surface map](./docs/icp-surface-map.md) (public-safe)
 - [Backlog](./docs/backlog.md)

@@ -1,5 +1,9 @@
 # Architecture — Certificate Wall
 
+**Why** this system exists and how planes/data/GPU choices fit together: [system-design.md](./system-design.md).
+
+This page is the **how** reference: frozen tokens, engine constants, formulas, and tick order.
+
 ## Motif dark hex freeze (default — DO NOT DRIFT)
 
 ```
@@ -34,16 +38,16 @@
 | ORIGIN_SHIFT_THRESH | 1e5 |
 | TEXTURE_POOL_N | 96 (48 low-end) |
 | DPR_CAP | 2 (1.5 low-end) |
-| PDF_DPI | 220 |
+| PDF_DPI | 220 (optional render path) |
 | PNG_MAX_EDGE | 1600 |
 | HASH_CELL | 384 |
-| PIXI | 8.14.3 (pin in package.json) |
+| PIXI | 8.20.1 (pin in package.json) |
 
 ## Physics
 
 **Momentum:** \(v_{t+\Delta t} = v_t (1-f)^{\Delta t}\), \(p += v \Delta t\)
 
-**Critical spring:** \(a = \omega^2(x^*-x) - 2\omega v\)
+**Critical spring:** \(a = \omega^2 (x^* - x) - 2\omega v\)
 
 **Modulo:** \(x_r = ((x_v \bmod W)+W)\bmod W\)
 
@@ -58,8 +62,8 @@
 
 ## Cold start
 
-Chrome paints first. Pixi initializes on splash **Enter** (or idle callback). Low-end: lower DPR, smaller pool, no antialias.
+Chrome paints first. Pixi initializes on splash **Enter**. Low-end: lower DPR, smaller pool, no antialias.
 
 ## Coordinate model
 
-Pieces live once in TILE. Camera is infinite. Visible repeats use tile indices `(i,j)` with spatial-hash queries split across torus seams (≤4 rects).
+Pieces live once in TILE. Camera is infinite. Visible repeats use tile indices `(i,j)` with spatial-hash queries split across torus seams.

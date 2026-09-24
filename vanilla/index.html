@@ -7,48 +7,48 @@
     <meta name="color-scheme" content="dark light" />
     <title>Certificate Wall · Kartavya Jharwal</title>
     <!-- SEO_INJECT -->
+    <link rel="preload" href="./fonts/Satoshi-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./fonts/Newsreader-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="./styles.css" />
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
     <script type="importmap">
       {
         "imports": {
-          "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.7/index.js",
           "pixi.js": "https://cdn.jsdelivr.net/npm/pixi.js@8.20.1/dist/pixi.min.mjs"
         }
       }
     </script>
   </head>
   <body>
-    <a class="skip-link" href="#dock">Skip to certificate wall controls</a>
+    <a class="skip-link" href="#dock">Skip to wall controls</a>
     <p id="sr-status" class="sr-only" role="status" aria-live="polite"></p>
 
     <main class="canvas-app">
-      <div id="viewport" class="canvas-viewport" role="application"
-           aria-label="Infinite certificate wall. Drag to roam, scroll or pinch to zoom. Selection details appear in the side panel.">
+      <div id="viewport" class="canvas-viewport" role="application" data-focus="off"
+           aria-label="Infinite certificate wall. Drag to roam, scroll or pinch to zoom. Selected record details appear in the side card.">
         <div id="board" class="infinite-board" aria-hidden="true"></div>
         <div id="wall-host" class="wall-host" aria-hidden="true"></div>
-        <div id="theme-wash" class="theme-wash" aria-hidden="true"></div>
+        <div class="focus-veil" aria-hidden="true"></div>
 
         <div id="toasts" class="toasts" aria-hidden="true"></div>
 
-        <section id="dock" class="canvas-toolbar" aria-label="Certificate wall controls">
+        <nav id="dock" class="canvas-toolbar" aria-label="Wall controls">
           <div class="dock-cluster">
-            <button class="tool-button" type="button" data-action="zoom-out" data-tip="Zoom out — key −" aria-label="Zoom out"><i data-lucide="zoom-out"></i></button>
-            <button id="zoom-readout" class="zoom-readout" type="button" data-tip="Zoom level" aria-label="Zoom level">100%</button>
-            <button class="tool-button" type="button" data-action="zoom-in" data-tip="Zoom in — key +" aria-label="Zoom in"><i data-lucide="zoom-in"></i></button>
+            <button class="tool-button" type="button" data-action="zoom-out" data-tip="Zoom out  −" aria-label="Zoom out"><i data-lucide="minus"></i></button>
+            <output id="zoom-readout" class="zoom-readout" aria-label="Zoom level">100%</output>
+            <button class="tool-button" type="button" data-action="zoom-in" data-tip="Zoom in  +" aria-label="Zoom in"><i data-lucide="plus"></i></button>
           </div>
 
           <span class="dock-sep" aria-hidden="true"></span>
 
           <div class="dock-cluster">
-            <button class="tool-button" type="button" data-action="scatter" data-tip="Nudge angles — key S" aria-label="Nudge wall angles"><i data-lucide="sparkles"></i></button>
-            <button class="tool-button" type="button" data-action="share" data-tip="Copy link to this view" aria-label="Copy link to this view"><i data-lucide="link"></i></button>
-            <button class="tool-button" type="button" data-action="center" data-tip="Zoom out / cycle viewpoints — key 0" aria-label="Recentre and cycle viewpoints"><i data-lucide="locate-fixed"></i></button>
-            <button id="fs-button" class="tool-button fs-btn" type="button" data-action="fullscreen" data-tip="Fullscreen" aria-label="Enter fullscreen">
-              <i data-lucide="maximize" class="fs-icon-max"></i>
-              <i data-lucide="minimize" class="fs-icon-min"></i>
+            <button class="tool-button" type="button" data-action="center" data-tip="Overview, then viewpoints  0" aria-label="Overview and cycle viewpoints"><i data-lucide="scan"></i></button>
+            <button class="tool-button" type="button" data-action="share" data-tip="Copy link to this view" aria-label="Copy link to this view"><i data-lucide="link-2"></i></button>
+            <button id="fs-button" class="tool-button fs-btn" type="button" data-action="fullscreen" data-tip="Fullscreen" aria-label="Toggle fullscreen">
+              <i data-lucide="maximize-2" class="fs-icon-max"></i>
+              <i data-lucide="minimize-2" class="fs-icon-min"></i>
             </button>
-            <button class="tool-button kb-btn" type="button" data-action="shortcuts" data-tip="Shortcuts — key ?" aria-label="Keyboard shortcuts"><i data-lucide="keyboard"></i></button>
+            <button class="tool-button kb-btn" type="button" data-action="shortcuts" data-tip="Shortcuts  ?" aria-label="Keyboard shortcuts"><i data-lucide="command"></i></button>
             <span id="fps-dot" class="fps-dot" data-grade="ok" aria-hidden="true"></span>
           </div>
 
@@ -56,8 +56,8 @@
 
           <div class="mode-switch" role="group" aria-label="Brightness">
             <span class="mode-thumb" aria-hidden="true"></span>
-            <button class="mode-opt" type="button" data-mode-set="dark" data-tip="Dark — key M" aria-pressed="true" aria-label="Dark mode"><i data-lucide="moon"></i></button>
-            <button class="mode-opt" type="button" data-mode-set="light" data-tip="Light — key M" aria-pressed="false" aria-label="Light mode"><i data-lucide="sun"></i></button>
+            <button class="mode-opt" type="button" data-mode-set="dark" data-tip="Dark  M" aria-pressed="true" aria-label="Dark mode"><i data-lucide="moon"></i></button>
+            <button class="mode-opt" type="button" data-mode-set="light" data-tip="Light  M" aria-pressed="false" aria-label="Light mode"><i data-lucide="sun"></i></button>
           </div>
 
           <span class="dock-sep" aria-hidden="true"></span>
@@ -70,32 +70,35 @@
             <button class="theme-chip" type="button" data-theme-set="catppuccin" data-tip="Catppuccin" aria-pressed="false" aria-label="Catppuccin theme"></button>
             <button class="theme-chip" type="button" data-theme-set="solara" data-tip="Solara" aria-pressed="false" aria-label="Solara theme"></button>
           </div>
-        </section>
+        </nav>
 
-        <aside id="selection-panel" class="selection-panel" hidden aria-label="Selected credential">
-          <div class="selection-topline">
-            <span>Selected proof</span>
-            <button type="button" data-action="deselect" aria-label="Close details"><i data-lucide="x"></i></button>
-          </div>
-          <div class="panel-nav">
-            <button class="nav-btn" type="button" data-action="prev" data-tip="Previous — arrow left" aria-label="Previous credential"><i data-lucide="chevron-left"></i></button>
-            <span id="selection-index" class="panel-index">— / —</span>
-            <button class="nav-btn" type="button" data-action="next" data-tip="Next — arrow right" aria-label="Next credential"><i data-lucide="chevron-right"></i></button>
-          </div>
-          <h1 id="selection-title">—</h1>
-          <p id="selection-format">—</p>
-          <p id="selection-summary" class="selection-summary">—</p>
-          <p class="selection-credential"><span class="label">ID</span> <span id="selection-credential">—</span></p>
-          <p id="selection-tags" class="selection-tags">—</p>
-          <a id="selection-verify" class="verify-link" href="#" hidden>Verify credential</a>
-          <div class="selection-color">
-            <span id="selection-swatch" aria-hidden="true"></span>
-            <span>Signal</span>
-            <b id="selection-tone">—</b>
-          </div>
-          <button type="button" class="focus-action" data-action="focus">
-            <span>Focus on wall</span><i data-lucide="arrow-right"></i>
-          </button>
+        <aside id="selection-panel" class="selection-panel" hidden aria-labelledby="selection-title">
+          <header class="panel-head">
+            <p class="eyebrow">Selected record</p>
+            <div class="panel-nav" role="group" aria-label="Browse records">
+              <button class="icon-btn" type="button" data-action="prev" aria-label="Previous record"><i data-lucide="chevron-left"></i></button>
+              <span id="selection-index" class="panel-index">—</span>
+              <button class="icon-btn" type="button" data-action="next" aria-label="Next record"><i data-lucide="chevron-right"></i></button>
+            </div>
+            <button class="icon-btn panel-close" type="button" data-action="deselect" aria-label="Close record"><i data-lucide="x"></i></button>
+          </header>
+
+          <article class="panel-body">
+            <h2 id="selection-title" class="panel-title">—</h2>
+            <p id="selection-byline" class="panel-byline">—</p>
+            <p id="selection-summary" class="panel-dek">—</p>
+            <dl class="panel-facts">
+              <div><dt class="eyebrow">Credential</dt><dd id="selection-credential">—</dd></div>
+              <div><dt class="eyebrow">Year</dt><dd id="selection-year">—</dd></div>
+            </dl>
+            <ul id="selection-tags" class="tag-list" aria-label="Tags"></ul>
+          </article>
+
+          <footer class="panel-foot">
+            <a id="selection-verify" class="verify-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Verify<i data-lucide="arrow-up-right"></i></a>
+            <span id="selection-pending" class="verify-pending">Verification link pending</span>
+            <button type="button" class="focus-action" data-action="focus"><i data-lucide="crosshair"></i>Refocus</button>
+          </footer>
         </aside>
 
         <div class="minimap">
@@ -103,40 +106,38 @@
             <span id="mm-dots" class="mm-dots" aria-hidden="true"></span>
             <span id="minimap-window" class="minimap-window" aria-hidden="true"></span>
           </button>
-          <span aria-hidden="true">Overview</span>
+          <span class="eyebrow" aria-hidden="true">Overview</span>
         </div>
 
         <div id="shortcuts" class="shortcuts" hidden>
-          <div class="shortcuts-card" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
-            <div class="shortcuts-head">
-              <span><i data-lucide="keyboard"></i>Keyboard</span>
-              <button type="button" data-action="shortcuts" aria-label="Close shortcuts"><i data-lucide="x"></i></button>
-            </div>
+          <section class="shortcuts-card" role="dialog" aria-modal="true" aria-labelledby="shortcuts-title">
+            <header class="shortcuts-head">
+              <h2 id="shortcuts-title" class="shortcuts-title">Keyboard</h2>
+              <button class="icon-btn" type="button" data-action="shortcuts" aria-label="Close shortcuts"><i data-lucide="x"></i></button>
+            </header>
             <dl class="shortcuts-list">
-              <div><dt>Drag</dt><dd>Roam the wall</dd></div>
-              <div><dt>Scroll · Pinch</dt><dd>Zoom (trackpad: ctrl-scroll)</dd></div>
-              <div><dt>Click</dt><dd>Select · spring focus</dd></div>
-              <div><dt>← →</dt><dd>Previous · next</dd></div>
-              <div><dt>F</dt><dd>Focus selection</dd></div>
-              <div><dt>+ −</dt><dd>Zoom in · out</dd></div>
-              <div><dt>0</dt><dd>Zoom out / cycle viewpoints</dd></div>
-              <div><dt>T · M</dt><dd>Theme · brightness</dd></div>
-              <div><dt>Esc</dt><dd>Deselect · close</dd></div>
-              <div><dt>?</dt><dd>This panel</dd></div>
+              <div><dt><kbd>Drag</kbd></dt><dd>Roam the wall</dd></div>
+              <div><dt><kbd>Scroll</kbd><kbd>Pinch</kbd></dt><dd>Zoom at the cursor</dd></div>
+              <div><dt><kbd>Click</kbd></dt><dd>Open and focus a record</dd></div>
+              <div><dt><kbd>←</kbd><kbd>→</kbd></dt><dd>Previous · next record</dd></div>
+              <div><dt><kbd>F</kbd></dt><dd>Refocus the record</dd></div>
+              <div><dt><kbd>+</kbd><kbd>−</kbd></dt><dd>Zoom in · out</dd></div>
+              <div><dt><kbd>0</kbd></dt><dd>Overview, then viewpoints</dd></div>
+              <div><dt><kbd>T</kbd><kbd>M</kbd></dt><dd>Theme · brightness</dd></div>
+              <div><dt><kbd>Esc</kbd></dt><dd>Close</dd></div>
             </dl>
-          </div>
+          </section>
         </div>
 
         <div id="splash" class="splash">
-          <div class="splash-inner">
-            <p class="splash-kicker">Kartavya · Proof Wall</p>
+          <header class="splash-inner">
+            <p class="splash-kicker eyebrow"><span>Kartavya Jharwal</span><span aria-hidden="true"></span><span>Proof Wall</span></p>
             <h1 class="splash-word">Certificate Wall</h1>
-            <p class="splash-summary">Evidence of technical execution — credentials you can verify, not ornaments.</p>
-            <button class="splash-enter" type="button" data-action="enter">
-              <span class="enter-dot" aria-hidden="true"></span>Enter the wall
-            </button>
-            <p class="splash-hint">drag to roam · scroll or pinch to zoom</p>
-          </div>
+            <p class="splash-summary">Evidence of technical execution — credentials you can <em>verify</em>, not ornaments.</p>
+            <p class="splash-folio eyebrow"><span id="splash-count">Records</span><span>Static edition</span></p>
+            <button class="splash-enter" type="button" data-action="enter">Enter the wall<i data-lucide="arrow-right"></i></button>
+            <p class="splash-hint eyebrow">Drag to roam · scroll or pinch to zoom</p>
+          </header>
         </div>
       </div>
     </main>

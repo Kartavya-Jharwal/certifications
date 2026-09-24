@@ -42,7 +42,8 @@ export function createWallRenderer(host) {
       preference: "webgpu",
       width: host.clientWidth || 800,
       height: host.clientHeight || 600,
-      background: tokens.bg,
+      // Transparent: the CSS board (grid + theme cross-fade) shows through.
+      backgroundAlpha: 0,
       antialias: !low,
       resolution: res,
       autoDensity: true,
@@ -54,6 +55,7 @@ export function createWallRenderer(host) {
     app.canvas.style.height = "100%";
     app.canvas.style.touchAction = "none";
     world = new PIXI.Container();
+    world.sortableChildren = true;
     app.stage.addChild(world);
     texturePool = new TexturePool(low ? TEXTURE_POOL_N_LOW : TEXTURE_POOL_N);
     texturePool.attach(app.renderer);
@@ -70,7 +72,6 @@ export function createWallRenderer(host) {
 
   function setThemeTokens(t) {
     tokens = { ...tokens, ...t };
-    if (app) app.renderer.background.color = tokens.bg;
   }
 
   function setPieces(pieces, spatialHash, tileIn) {
@@ -83,52 +84,71 @@ export function createWallRenderer(host) {
     selectedId = id;
   }
 
-  function makeCard(piece) {
+  const PLATE_H = 46;
+  const TEXT_RES = 2;
+
+  function makeCard() {
     const root = new PIXI.Container();
-    root.eventMode = "static";
-    root.cursor = "pointer";
-
     const mat = new PIXI.Graphics();
-    const pad = Math.round(Math.min(20, Math.max(10, piece.width * 0.035)));
-    const matA = piece.mat?.a || tokens.matA;
-    mat.roundRect(0, 0, piece.width, piece.height, 6).fill(matA);
-    root.addChild(mat);
-
     const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
-    sprite.x = pad;
-    sprite.y = pad;
-    sprite.width = piece.width - pad * 2;
-    sprite.height = piece.height - pad * 2 - 28;
-    sprite.tint = 0x888888;
-    root.addChild(sprite);
-
     const plate = new PIXI.Text({
-      text: piece.title,
-      style: {
-        fontFamily: "Satoshi, sans-serif",
-        fontSize: 13,
-        fill: piece.mat?.ink || tokens.matInk,
-        fontWeight: "600",
-      },
+      text: "",
+      resolution: TEXT_RES,
+      style: { fontFamily: "Satoshi, sans-serif", fontSize: 14, fontWeight: "700", letterSpacing: -0.2 },
     });
-    plate.x = pad;
-    plate.y = piece.height - 22;
-    plate.label = "plate";
-    root.addChild(plate);
-
+    const byline = new PIXI.Text({
+      text: "",
+      resolution: TEXT_RES,
+      style: { fontFamily: "Newsreader, Georgia, serif", fontSize: 12.5, fontStyle: "italic" },
+    });
+    root.addChild(mat, sprite, plate, byline);
     root._mat = mat;
     root._sprite = sprite;
     root._plate = plate;
-    root._pieceId = piece.id;
-    root._pad = pad;
+    root._byline = byline;
+    root._pieceId = null;
+    root._texId = null;
     return root;
+  }
+
+  function paintMat(node, piece) {
+    node._mat.clear();
+    node._mat.roundRect(0, 0, piece.width, piece.height, 4).fill(piece.mat?.a || tokens.matA);
+    const ink = piece.mat?.ink || tokens.matInk;
+    node._plate.style.fill = ink;
+    node._byline.style.fill = ink;
+    node._byline.alpha = 0.72;
+  }
+
+  /** Pooled cards are generic; bind geometry and copy to the record they now show. */
+  function bindCard(node, piece) {
+    const pad = Math.round(Math.min(20, Math.max(10, piece.width * 0.035)));
+    node._pieceId = piece.id;
+    node._texId = null;
+    node._pad = pad;
+    node.pivot.set(piece.hw, piece.hh);
+    node.alpha = selectedId && selectedId !== piece.id ? 0.32 : 1;
+    node.scale.set(1);
+    paintMat(node, piece);
+
+    const s = node._sprite;
+    s.texture = PIXI.Texture.WHITE;
+    s.tint = PIXI.Color.shared.setValue(tokens.matB || tokens.matA).toNumber();
+    s.position.set(pad, pad);
+    s.width = piece.width - pad * 2;
+    s.height = piece.height - pad * 2 - PLATE_H;
+
+    node._plate.text = piece.title;
+    node._plate.position.set(pad, piece.height - PLATE_H + 6);
+    node._byline.text = piece.issuer ? `${piece.issuer}, ${piece.year}` : String(piece.year || "");
+    node._byline.position.set(pad, piece.height - PLATE_H + 25);
   }
 
   function acquire(piece, key) {
     let node = live.get(key);
     if (node) return node;
-    node = free.pop() || makeCard(piece);
-    node._pieceId = piece.id;
+    node = free.pop() || makeCard();
+    bindCard(node, piece);
     node.visible = true;
     world.addChild(node);
     live.set(key, node);
@@ -145,58 +165,70 @@ export function createWallRenderer(host) {
   }
 
   async function ensureTexture(piece) {
-    if (!piece.image || loading.has(piece.id)) return;
-    if (texturePool.has(piece.id)) {
-      applyTex(piece.id);
-      return;
-    }
+    if (!piece.image || loading.has(piece.id) || texturePool.has(piece.id)) return;
     loading.add(piece.id);
     try {
-      let texture;
+      // Decode via <img>: Assets.load infers parsers from file extensions, and
+      // CDN URLs (query-string only) resolve to null there.
+      let texture = PIXI.Texture.WHITE;
       try {
-        texture = await PIXI.Assets.load({
-          alias: `cert-${piece.id}`,
-          src: piece.image,
-          data: { crossOrigin: "anonymous" },
-        });
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.decoding = "async";
+        img.src = piece.image;
+        await img.decode();
+        texture = PIXI.Texture.from(img);
       } catch {
-        texture = await new Promise((resolve) => {
-          const img = new Image();
-          img.crossOrigin = "anonymous";
-          img.onload = () => resolve(PIXI.Texture.from(img));
-          img.onerror = () => resolve(PIXI.Texture.WHITE);
-          img.src = piece.image;
-        });
+        /* keep the mat placeholder */
       }
-      texturePool.byId.set(piece.id, { texture, url: piece.image, lastUsed: performance.now() });
+      texturePool.byId.set(piece.id, { texture, cover: null, url: piece.image, lastUsed: performance.now() });
       texturePool.lru.push(piece.id);
-      applyTex(piece.id);
     } finally {
       loading.delete(piece.id);
     }
   }
 
-  function applyTex(id) {
-    const slot = texturePool.byId.get(id);
-    if (!slot) return;
-    for (const node of live.values()) {
-      if (node._pieceId === id && node._sprite) {
-        node._sprite.texture = slot.texture;
-        node._sprite.tint = 0xffffff;
-      }
+  /** Crop the source to the card window's aspect once per record — cover, not stretch. */
+  function coverTexture(slot, piece, pad) {
+    if (slot.cover) return slot.cover;
+    const src = slot.texture;
+    if (!src || src === PIXI.Texture.WHITE) return src;
+    const winW = piece.width - pad * 2;
+    const winH = piece.height - pad * 2 - PLATE_H;
+    const tw = src.width;
+    const th = src.height;
+    const target = winW / winH;
+    let fw = tw;
+    let fh = tw / target;
+    if (fh > th) {
+      fh = th;
+      fw = th * target;
     }
+    const frame = new PIXI.Rectangle((tw - fw) / 2, (th - fh) / 2, fw, fh);
+    slot.cover = new PIXI.Texture({ source: src.source, frame });
+    return slot.cover;
+  }
+
+  function bindTexture(node, piece) {
+    if (node._texId === piece.id) return;
+    const slot = texturePool.byId.get(piece.id);
+    if (!slot || !slot.texture || slot.texture === PIXI.Texture.WHITE) return;
+    const s = node._sprite;
+    const w = s.width;
+    const h = s.height;
+    s.texture = coverTexture(slot, piece, node._pad);
+    s.width = w;
+    s.height = h;
+    s.tint = 0xffffff;
+    node._texId = piece.id;
   }
 
   function recolorMats() {
-    for (const node of [...live.values(), ...free]) {
+    for (const node of live.values()) {
       const piece = piecesById.get(node._pieceId);
-      if (!piece || !node._mat) continue;
-      const matA = piece.mat?.a || tokens.matA;
-      const ink = piece.mat?.ink || tokens.matInk;
-      node._mat.clear();
-      node._mat.roundRect(0, 0, piece.width, piece.height, 6).fill(matA);
-      if (node._plate) node._plate.style.fill = ink;
+      if (piece) paintMat(node, piece);
     }
+    // Free cards repaint on their next bind.
   }
 
   function syncCamera(cam) {
@@ -207,8 +239,10 @@ export function createWallRenderer(host) {
     world.scale.set(cam.zoom);
   }
 
-  function draw(cam) {
+  function draw(cam, dt = 1 / 60) {
     if (!app || !hash) return;
+    // Frame-rate independent approach toward selection targets.
+    const k = 1 - Math.exp(-dt * 9);
     const w = app.screen.width;
     const h = app.screen.height;
     const padW = (CULL_MARGIN_PX + 260) / cam.zoom;
@@ -255,22 +289,25 @@ export function createWallRenderer(host) {
           const key = id + "@" + i + ":" + j;
           needed.add(key);
           const node = acquire(piece, key);
-          node.position.set(wx, wy);
-          node.rotation = (piece.angle * Math.PI) / 180;
-          node.zIndex = piece.depth + (selectedId === id ? 50 : 0);
-          const dim = selectedId && selectedId !== id;
-          node.alpha = dim ? 0.35 : 1;
-          if (node._plate) node._plate.visible = !far && !mid;
-          if (
-            !texturePool.has(id) &&
+          const isSel = selectedId === id;
+          node.position.set(wx + piece.hw, wy + piece.hh);
+          node.rotation = ((isSel ? piece.angle * 0.25 : piece.angle) * Math.PI) / 180;
+          node.zIndex = piece.depth + (isSel ? 50 : 0);
+          const targetAlpha = selectedId && !isSel ? 0.32 : 1;
+          const targetScale = isSel ? 1.035 : 1;
+          node.alpha += (targetAlpha - node.alpha) * k;
+          node.scale.set(node.scale.x + (targetScale - node.scale.x) * k);
+          node._plate.visible = !far;
+          node._byline.visible = !far && !mid;
+          if (texturePool.has(id)) {
+            bindTexture(node, piece);
+          } else if (
             sx > -halfW - LOAD_MARGIN_PX &&
             sx < w + halfW + LOAD_MARGIN_PX &&
             sy > -halfH - LOAD_MARGIN_PX &&
             sy < h + halfH + LOAD_MARGIN_PX
           ) {
             ensureTexture(piece);
-          } else if (texturePool.has(id)) {
-            applyTex(id);
           }
         }
       }
@@ -288,8 +325,6 @@ export function createWallRenderer(host) {
         if (texturePool.size() > texturePool.N * 0.9) texturePool.release(id);
       }
     }
-
-    world.sortableChildren = true;
   }
 
   function hitTest(sx, sy, cam) {

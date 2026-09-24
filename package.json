@@ -28,7 +28,6 @@
     "stress:data": "node scripts/stress-gen-yaml.js"
   },
   "dependencies": {
-    "gsap": "^3.12.7",
     "pixi.js": "8.20.1",
     "yaml": "^2.7.0"
   },

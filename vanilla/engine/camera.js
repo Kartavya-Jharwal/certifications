@@ -67,12 +67,16 @@ function vpFitZoom(piece) {
   return clamp(700 / m, MIN_ZOOM, MAX_ZOOM);
 }
 
-export function focusPieceInView(cam, piece, vpW, vpH) {
+/**
+ * Spring to a record with editorial breathing room. `insetRight` reserves
+ * screen space (e.g. the open record card) so the piece centres in what's left.
+ */
+export function focusPieceInView(cam, piece, vpW, vpH, { insetRight = 0 } = {}) {
   const n = nearestImage(cam, piece.x + piece.width / 2, piece.y + piece.height / 2, cam.tile.w, cam.tile.h);
-  const pad = 1.25;
-  const zx = vpW / (piece.width * pad);
-  const zy = vpH / (piece.height * pad);
-  springTo(cam, n.x, n.y, clamp(Math.min(zx, zy), MIN_ZOOM, MAX_ZOOM));
+  const pad = 1.6;
+  const usableW = Math.max(vpW - insetRight, vpW * 0.5);
+  const zoom = clamp(Math.min(usableW / (piece.width * pad), vpH / (piece.height * pad)), MIN_ZOOM, MAX_ZOOM);
+  springTo(cam, n.x + insetRight / 2 / zoom, n.y, zoom);
 }
 
 export function recenter(cam) {

@@ -9,6 +9,10 @@ See [LICENSE](../LICENSE) — free to use with attribution; personal certificati
 Font family Satoshi by Deni Anggara / Indian Type Foundry via [Fontshare](https://www.fontshare.com/fonts/satoshi).  
 Shipped weights: Regular, Medium, Bold (woff2 only under `public/fonts/`).
 
+## Newsreader
+
+Newsreader by Production Type, released under the [SIL Open Font License 1.1](https://openfontlicense.org/). Variable (weight + optical size) latin subset, roman and italic, sourced from Fontsource and self-hosted as `public/fonts/Newsreader-Variable*.woff2`.
+
 ## Unsplash
 
 Preview placeholder images may use Unsplash URLs under the [Unsplash License](https://unsplash.com/license) until replaced by rendered certificate PNGs.
